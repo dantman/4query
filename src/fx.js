@@ -78,10 +78,7 @@ jQuery.fn.extend({
 		}
 	},
 
-	// Save the old toggle function
-	_toggle: jQuery.fn.toggle,
-
-	toggle: function( fn, fn2 ){
+	toggleVisibility: function( fn, fn2 ){
 		var bool = typeof fn === "boolean";
 
 		return jQuery.isFunction(fn) && jQuery.isFunction(fn2) ?
@@ -185,6 +182,10 @@ jQuery.fn.extend({
 	}
 
 });
+
+// jQuery back compat for $.toggle -> $.toggleVisibility rename
+jQuery.fn._toggle = jQuery.fn.toggle; // Save the old toggle function
+jQuery.fn.toggle  = jQuery.fn.toggleVisibility;
 
 // Generate shortcuts for custom animations
 jQuery.each({
