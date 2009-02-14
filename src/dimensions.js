@@ -48,3 +48,39 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 	};
 
 });
+
+// Try to keep the same naming pattern as the the offset API 
+jQuery.fn.extend({
+	size: function( size ) {
+		if( this[0] == window || this[0] == document || size === undefined )
+			return {
+				width: jQuery.fn.width.call( this ),
+				height: jQuery.fn.height.call( this )
+			};
+		
+		if( typeof size === 'object' ) {
+			var width = size.width, height = size.height;
+		} else {
+			var width = arguments[0], height = arguments[1];
+		}
+		
+		jQuery.fn.width.call( this, width );
+		jQuery.fn.height.call( this, height );
+		
+		return this;
+	},
+	
+	innerSize: function() {
+		return {
+			width: jQuery.fn.innerWidth.call( this ),
+			height: jQuery.fn.innerHeight.call( this )
+		};
+	},
+	
+	outerSize: function( margin ) {
+		return {
+			width: jQuery.fn.outerWidth.call( this, margin ),
+			height: jQuery.fn.outerHeight.call( this, margin )
+		};
+	}
+});

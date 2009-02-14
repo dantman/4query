@@ -3,6 +3,7 @@
 === 0.0.2 ===
 - Instead of always falling back to insecure eval, use a json parse if one is available
 - Rename .toggle to .toggleVisibility to make the name less ambiguous (keep a depreciated .toggle alias for backwards compat)
+- Add .size .innerSize and .outerSize to make the dimensions API follow a similar pattern as the offset API
 
 === 0.0.1 ===
 - Initial jQuery modifications
