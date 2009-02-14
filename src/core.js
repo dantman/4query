@@ -159,8 +159,16 @@ jQuery.fn = jQuery.prototype = {
 		var options = name;
 
 		// Look for the case where we're accessing a style value
-		if ( typeof name === "string" )
-			if ( value === undefined )
+		if ( typeof name === "string" || jQuery.isArray( name ) )
+			if ( typeof name !== "string" ) {
+				options = {};
+				var jn = this;
+				jQuery.each( name, function(){
+					options[ this ] = jn[0] && jQuery[ type || "attr" ]( jn[0], this );
+				});
+				
+				return options;
+			} else if ( value === undefined )
 				return this[0] && jQuery[ type || "attr" ]( this[0], name );
 
 			else {
