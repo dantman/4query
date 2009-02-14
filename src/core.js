@@ -619,8 +619,10 @@ jQuery.extend({
 	noConflict: function( deep ) {
 		window.$ = _$;
 
-		if ( deep )
+		if ( deep ) {
 			window.jQuery = _jQuery;
+			window.$4     = _$4;
+		}
 
 		return jQuery;
 	},
