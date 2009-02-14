@@ -499,7 +499,7 @@ jQuery.extend({
 
 			// Get the JavaScript object, if JSON is used.
 			if ( type == "json" )
-				data = window["eval"]("(" + data + ")");
+				data = jQuery.json(data);
 		}
 		
 		return data;
@@ -536,6 +536,14 @@ jQuery.extend({
 
 		// Return the resulting serialization
 		return s.join("&").replace(/%20/g, "+");
+	},
+	
+	json: function( data ) {
+		var func = ( window.JSON && window.JSON.parse ) // Native JSON and json2.js
+			|| window.json_parse // json_parse.js and json_parse_state.js
+			|| window.jsonParse; // json_sans_eval.js
+		
+		return func ? func( data ) : window["eval"]("(" + data + ")");
 	}
 
 });

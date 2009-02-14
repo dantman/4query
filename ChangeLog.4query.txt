@@ -1,8 +1,11 @@
 == 4query ChangeLog ==
 
+=== 0.0.2 ===
+- Instead of always falling back to insecure eval, use a json parse if one is available
+
 === 0.0.1 ===
 - Initial jQuery modifications
-- Droppign pack support for now
+- Dropping pack support for now
 - Ignoring plugins for now
 - Added $4 symbol
 - Tracking both jQuery and 4query versions
