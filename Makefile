@@ -6,7 +6,7 @@ DOCS_DIR = ${PREFIX}/docs
 TEST_DIR = ${PREFIX}/test
 DIST_DIR = ${PREFIX}/dist
 SPEED_DIR = ${PREFIX}/speed
-PLUG_DIR = ../plugins
+#PLUG_DIR = ../plugins
 
 BASE_FILES = ${SRC_DIR}/core.js\
 	${SRC_DIR}/data.js\
@@ -18,117 +18,118 @@ BASE_FILES = ${SRC_DIR}/core.js\
 	${SRC_DIR}/offset.js\
 	${SRC_DIR}/dimensions.js
 
-PLUGINS = ${PLUG_DIR}/button/*\
-	${PLUG_DIR}/center/*\
-	${PLUG_DIR}/cookie/*\
-	${PLUG_DIR}/dimensions/*\
-	${PLUG_DIR}/metadata/*\
-	${PLUG_DIR}/form/*\
-	${PLUG_DIR}/greybox/greybox.js\
-	${PLUG_DIR}/interface/*\
-	${PLUG_DIR}/pager/*\
-	${PLUG_DIR}/tablesorter/*\
-	${PLUG_DIR}/tabs/*\
-	${PLUG_DIR}/tooltip/jquery.tooltip.js\
-	${PLUG_DIR}/accordion/jquery.accordion.js
+#PLUGINS = ${PLUG_DIR}/button/*\
+#	${PLUG_DIR}/center/*\
+#	${PLUG_DIR}/cookie/*\
+#	${PLUG_DIR}/dimensions/*\
+#	${PLUG_DIR}/metadata/*\
+#	${PLUG_DIR}/form/*\
+#	${PLUG_DIR}/greybox/greybox.js\
+#	${PLUG_DIR}/interface/*\
+#	${PLUG_DIR}/pager/*\
+#	${PLUG_DIR}/tablesorter/*\
+#	${PLUG_DIR}/tabs/*\
+#	${PLUG_DIR}/tooltip/jquery.tooltip.js\
+#	${PLUG_DIR}/accordion/jquery.accordion.js
 
 MODULES = ${SRC_DIR}/intro.js\
 	${BASE_FILES}\
 	${SRC_DIR}/outro.js
 
-MODULES_WITH_PLUGINS = ${SRC_DIR}/intro.js\
-	${BASE_FILES}\
-	${PLUGINS}\
-	${SRC_DIR}/outro.js
+#MODULES_WITH_PLUGINS = ${SRC_DIR}/intro.js\
+#	${BASE_FILES}\
+#	${PLUGINS}\
+#	${SRC_DIR}/outro.js
 
-JQ = ${DIST_DIR}/jquery.js
-JQ_LITE = ${DIST_DIR}/jquery.lite.js
-JQ_MIN = ${DIST_DIR}/jquery.min.js
-JQ_PACK = ${DIST_DIR}/jquery.pack.js
+FQ = ${DIST_DIR}/4query.js
+FQ_LITE = ${DIST_DIR}/4query.lite.js
+FQ_MIN = ${DIST_DIR}/4query.min.js
+#FQ_PACK = ${DIST_DIR}/4query.pack.js
 
-JQ_VER = `cat version.txt`
-VER = sed s/@VERSION/${JQ_VER}/
+JQ_VER = `cat jversion.txt`
+FQ_VER = `cat 4version.txt`
+VER = sed "s/@4VERSION/${FQ_VER}/;s/@JVERSION/${JQ_VER}/"
 
 JAR = java -jar ${BUILD_DIR}/js.jar
 MINJAR = java -jar ${BUILD_DIR}/yuicompressor-2.4.2.jar
 
-DATE=`svn info . | grep Date: | sed 's/.*: //g'`
-REV=`svn info . | grep Rev: | sed 's/.*: //g'`
+#DATE=`svn info . | grep Date: | sed 's/.*: //g'`
+#REV=`svn info . | grep Rev: | sed 's/.*: //g'`
 
-all: jquery lite min pack speed
-	@@echo "jQuery build complete."
+all: 4query lite min pack speed
+	@@echo "4query build complete."
 
 ${DIST_DIR}:
 	@@mkdir -p ${DIST_DIR}
 
-jquery: ${DIST_DIR} ${JQ}
+4query: ${DIST_DIR} ${FQ}
 
-${JQ}: ${MODULES}
-	@@echo "Building" ${JQ}
+${FQ}: ${MODULES}
+	@@echo "Building" ${FQ}
 
 	@@mkdir -p ${DIST_DIR}
 	@@cat ${MODULES} | \
-		sed 's/Date:./&'"${DATE}"'/' | \
-		sed 's/Revision:./&'"${REV}"'/' | \
-		${VER} > ${JQ};
+#		sed 's/Date:./&'"${DATE}"'/' | \
+#		sed 's/Revision:./&'"${REV}"'/' | \
+		${VER} > ${FQ};
 
-	@@echo ${JQ} "Built"
+	@@echo ${FQ} "Built"
 	@@echo
 
-with_plugins: ${MODULES_WITH_PLUGINS}
-	@@echo "Building" ${JQ}
+#with_plugins: ${MODULES_WITH_PLUGINS}
+#	@@echo "Building" ${FQ}
+#
+#	@@mkdir -p ${DIST_DIR}
+#	@@cat ${MODULES_WITH_PLUGINS} | ${VER} > ${FQ};
+#
+#	@@echo ${FQ} "Built"
+#	@@echo
 
-	@@mkdir -p ${DIST_DIR}
-	@@cat ${MODULES_WITH_PLUGINS} | ${VER} > ${JQ};
+lite: ${FQ_LITE}
 
-	@@echo ${JQ} "Built"
+${FQ_LITE}: ${FQ}
+	@@echo "Building" ${FQ_LITE}
+
+	@@cp ${FQ} ${FQ_LITE}
+
+	@@echo ${FQ_LITE} "Built"
 	@@echo
 
-lite: ${JQ_LITE}
+#pack: ${FQ_PACK}
 
-${JQ_LITE}: ${JQ}
-	@@echo "Building" ${JQ_LITE}
+#${FQ_PACK}: ${FQ}
+#	@@echo "Building" ${FQ_PACK}
+#
+#	@@echo " - Compressing using Packer"
+#	@@${JAR} ${BUILD_DIR}/build/pack.js ${FQ} ${FQ_PACK}
+#
+#	@@echo ${FQ_PACK} "Built"
+#	@@echo
 
-	@@cp ${JQ} ${JQ_LITE}
+min: ${FQ_MIN}
 
-	@@echo ${JQ_LITE} "Built"
-	@@echo
-
-pack: ${JQ_PACK}
-
-${JQ_PACK}: ${JQ}
-	@@echo "Building" ${JQ_PACK}
-
-	@@echo " - Compressing using Packer"
-	@@${JAR} ${BUILD_DIR}/build/pack.js ${JQ} ${JQ_PACK}
-
-	@@echo ${JQ_PACK} "Built"
-	@@echo
-
-min: ${JQ_MIN}
-
-${JQ_MIN}: ${JQ}
-	@@echo "Building" ${JQ_MIN}
+${FQ_MIN}: ${FQ}
+	@@echo "Building" ${FQ_MIN}
 
 	@@echo " - Compressing using Minifier"
-	@@${MINJAR} ${JQ} > ${JQ_MIN}
+	@@${MINJAR} ${FQ} > ${FQ_MIN}
 
-	@@echo ${JQ_MIN} "Built"
+	@@echo ${FQ_MIN} "Built"
 	@@echo
 
-test: ${JQ}
+test: ${FQ}
 	@@echo "Building Test Suite"
 	@@echo "Test Suite Built"
 	@@echo
 
-runtest: ${JQ} test
+runtest: ${FQ} test
 	@@echo "Running Automated Test Suite"
 	@@${JAR} ${BUILD_DIR}/runtest/test.js
 
 	@@echo "Test Suite Finished"
 	@@echo
 
-speed: ${JQ}
+speed: ${FQ}
 	@@echo "Building Speed Test Suite"
 
 	@@echo " - Making Speed Test Suite Directory:" ${SPEED_DIR}

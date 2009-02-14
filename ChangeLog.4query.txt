@@ -1,3 +1,3 @@
-== jQuery ChangeLog ==
+== 4query ChangeLog ==
 
-=== 0.0.0 ===
+=== 0.0.1 ===

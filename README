@@ -37,10 +37,6 @@ make lite
   4query without all the additional inline documentation and test cases.
   Makes: ./dist/4query.lite.js
 
-make pack
-  A compressed version of 4query (made with Packer).
-  Makes: ./dist/4query.pack.js
-
 make docs
   Builds a complete copy of the documentation, based upon the 4query source.
   Makes ./docs/

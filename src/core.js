@@ -5,10 +5,12 @@ var
 	undefined,
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
+	// Map over $4 in case of overwrite
+	_$4 = window.$4,
 	// Map over the $ in case of overwrite
 	_$ = window.$,
 
-	jQuery = window.jQuery = window.$ = function( selector, context ) {
+	jQuery = window.jQuery = window.$4 = window.$ = function( selector, context ) {
 		// The jQuery object is actually just the init constructor 'enhanced'
 		return new jQuery.fn.init( selector, context );
 	},
@@ -81,9 +83,12 @@ jQuery.fn = jQuery.prototype = {
 	// Start with an empty selector
 	selector: "",
 
+	// The current version of 4query being used
+	v4query: "@4VERSION",
+	
 	// The current version of jQuery being used
-	jquery: "@VERSION",
-
+	jquery: "@JVERSION",
+	
 	// The number of elements contained in the matched element set
 	size: function() {
 		return this.length;
