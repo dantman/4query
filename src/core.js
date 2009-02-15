@@ -77,7 +77,9 @@ jQuery.fn = jQuery.prototype = {
 			this.context = selector.context;
 		}
 
-		return this.setArray(jQuery.makeArray(selector));
+		return this.setArray(jQuery.isArray( selector ) ?
+			selector :
+			jQuery.makeArray(selector));
 	},
 
 	// Start with an empty selector
@@ -100,7 +102,7 @@ jQuery.fn = jQuery.prototype = {
 		return num === undefined ?
 
 			// Return a 'clean' array
-			jQuery.makeArray( this ) :
+			Array.prototype.slice.call( this ) :
 
 			// Return just the object
 			this[ num ];
@@ -282,19 +284,15 @@ jQuery.fn = jQuery.prototype = {
 	push: [].push,
 
 	find: function( selector ) {
-		if ( this.length === 1 && !/,/.test(selector) ) {
+		if ( this.length === 1 ) {
 			var ret = this.pushStack( [], "find", selector );
 			ret.length = 0;
 			jQuery.find( selector, this[0], ret );
 			return ret;
 		} else {
-			var elems = jQuery.map(this, function(elem){
+			return this.pushStack( jQuery.unique(jQuery.map(this, function(elem){
 				return jQuery.find( selector, elem );
-			});
-
-			return this.pushStack( /[^+>] [^+>]/.test( selector ) ?
-				jQuery.unique( elems ) :
-				elems, "find", selector );
+			})), "find", selector );
 		}
 	},
 
