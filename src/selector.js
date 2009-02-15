@@ -421,7 +421,7 @@ var Expr = Sizzle.selectors = {
 			elem.parentNode.selectedIndex;
 			return elem.selected === true;
 		},
-		parent: function(elem){
+		hasChildren: function(elem){
 			return !!elem.firstChild;
 		},
 		empty: function(elem){
@@ -602,6 +602,9 @@ var Expr = Sizzle.selectors = {
 		}
 	}
 };
+
+// Backwards compat for :parent renamed to :hasChildren
+Sizzle.selectors.filters.parent = Sizzle.selectors.filters.hasChildren;
 
 var origPOS = Expr.match.POS;
 

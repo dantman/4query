@@ -7,6 +7,7 @@
 - .attr and .css now support input in the format of an array of keys to output an object for; this object can later be passed back to reset those keys
 - Fix noConflict:deep so it also reverts the $4 symbol
 - scrollLeft and scrollTop can accept named aliases for the left and top, and the right and bottom to make scrolling code easier
+- Rename :parent to :hasChildren
 
 === 0.0.1 ===
 - Initial jQuery modifications
