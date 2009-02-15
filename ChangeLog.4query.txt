@@ -8,6 +8,7 @@
 - Fix noConflict:deep so it also reverts the $4 symbol
 - scrollLeft and scrollTop can accept named aliases for the left and top, and the right and bottom to make scrolling code easier
 - Rename :parent to :hasChildren
+- Depreciate ambiguous .toggle( fn, fn, fn ); and instead support .click( fn, fn, fn );
 
 === 0.0.1 ===
 - Initial jQuery modifications

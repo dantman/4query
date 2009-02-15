@@ -502,6 +502,31 @@ jQuery.fn.extend({
 		}		
 	},
 
+	click: function( fn ) {
+		if ( arguments.length > 1 ) {
+			// Save reference to arguments for access in closure
+			var args = arguments, i = 1;
+
+			// link all the functions, so any of them can unbind this click handler
+			while( i < args.length )
+				jQuery.event.proxy( fn, args[i++] );
+
+			return this.click( jQuery.event.proxy( fn, function(event) {
+				// Figure out which function to execute
+				this.lastToggle = ( this.lastToggle || 0 ) % i;
+
+				// Make sure that clicks stop
+				event.preventDefault();
+
+				// and execute the function
+				return args[ this.lastToggle++ ].apply( this, arguments ) || false;
+			}));
+		}
+		
+		return fn ? this.bind("click", fn) : this.trigger("click");
+	},
+
+	/* @deprecated */
 	toggle: function( fn ) {
 		// Save reference to arguments for access in closure
 		var args = arguments, i = 1;
@@ -662,7 +687,7 @@ function bindReady(){
 	jQuery.event.add( window, "load", jQuery.ready );
 }
 
-jQuery.each( ("blur,focus,load,resize,scroll,unload,click,dblclick," +
+jQuery.each( ("blur,focus,load,resize,scroll,unload,dblclick," +
 	"mousedown,mouseup,mousemove,mouseover,mouseout,mouseenter,mouseleave," +
 	"change,select,submit,keydown,keypress,keyup,error").split(","), function(i, name){
 
