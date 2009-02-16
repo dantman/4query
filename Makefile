@@ -62,9 +62,9 @@ all: 4query lite min speed
 ${DIST_DIR}:
 	@@mkdir -p ${DIST_DIR}
 
-4query: ${DIST_DIR} ${FQ}
+4query: ${FQ}
 
-${FQ}: ${MODULES}
+${FQ}: ${DIST_DIR} ${MODULES}
 	@@echo "Building" ${FQ}
 
 	@@mkdir -p ${DIST_DIR}
