@@ -56,7 +56,7 @@ MINJAR = java -jar ${BUILD_DIR}/yuicompressor-2.4.2.jar
 #DATE=`svn info . | grep Date: | sed 's/.*: //g'`
 #REV=`svn info . | grep Rev: | sed 's/.*: //g'`
 
-all: 4query lite min pack speed
+all: 4query lite min speed
 	@@echo "4query build complete."
 
 ${DIST_DIR}:
