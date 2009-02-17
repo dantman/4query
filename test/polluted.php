@@ -22,7 +22,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr" id="html">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>jQuery Test Suite</title>
+	<title>4query Test Suite</title>
 	<link rel="Stylesheet" media="screen" href="qunit/testsuite.css" />
 	<link rel="Stylesheet" media="screen" href="data/otherlibs.css" />
 	<style type="text/css">
@@ -40,7 +40,7 @@
 </head>
 
 <body id="body">
-	<h1 id="header">jQuery Test Suite</h1>
+	<h1 id="header">4query Test Suite</h1>
 	<h2 id="banner" class="fail"></h2>
 	<h2 id="userAgent">Choose other libraries to include</h2>
 	
