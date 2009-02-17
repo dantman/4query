@@ -539,11 +539,16 @@ jQuery.extend({
 	},
 	
 	json: function( data ) {
-		var func = ( window.JSON && window.JSON.parse ) // Native JSON and json2.js
-			|| window.json_parse // json_parse.js and json_parse_state.js
-			|| window.jsonParse; // json_sans_eval.js
+		try {
+			var func = ( window.JSON && window.JSON.parse ) // Native JSON and json2.js
+				|| window.json_parse // json_parse.js and json_parse_state.js
+				|| window.jsonParse; // json_sans_eval.js
 		
-		return func ? func( data ) : window["eval"]("(" + data + ")");
+			return func ? func( data ) : window["eval"]("(" + data + ")");
+		} catch (err) {
+			if(err.name != "SyntaxError") throw err;
+			return false;
+		}
 	}
 
 });
