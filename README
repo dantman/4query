@@ -10,16 +10,10 @@ What you need to build your own 4query:
    If not, go to this page and download "Java Runtime Environment (JRE) 5.0"
    http://java.sun.com/javase/downloads/index.jsp
 
- - You now have two options for building 4query, if you have access to
-   common UNIX commands (like 'make', 'mkdir', 'rm', 'cat', and 'echo')
-   then simply type 'make' to build all the components.
-
- - The other option is if you have Ant installed (or are on Windows and
-   don't have access to make). You can download Ant from here:
-   http://ant.apache.org/bindownload.cgi
-
-   If you do have Ant, everytime (in this README) that I say 'make', do
-   'ant' instead - it works identically (for all intents and purposes).
+ - As well you will need GNU make.
+   Make is pre-installed on most Linux and BSD based distributions
+   (This should include OS X) and Windows users can get access to it
+   using cygwin.
 
 How to build your own 4query:
 
