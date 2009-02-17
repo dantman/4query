@@ -417,6 +417,21 @@ test("trigger(eventObject, [data], [fn])", function() {
 	$parent.unbind().remove();
 });
 
+test("jQuery.Event.currentTarget", function(){
+	expect(1);
+	
+	var counter = 0,
+		$elem = jQuery('<button>a</button>').click(function(e){
+		equals( e.currentTarget, this, "Check currentTarget on "+(counter++?"native":"fake") +" event" );
+	});
+	
+	// Fake event
+	$elem.trigger('click');
+	
+	// Cleanup
+	$elem.unbind();
+});
+
 test("toggle(Function, Function, ...)", function() {
 	expect(11);
 	

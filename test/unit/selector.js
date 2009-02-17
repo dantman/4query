@@ -1,7 +1,7 @@
 module("selector");
 
 test("element", function() {
-	expect(14);
+	expect(18);
 	reset();
 
 	ok( jQuery("*").size() >= 30, "Select all" );
@@ -15,6 +15,11 @@ test("element", function() {
 	t( "Element Selector", "html", ["html"] );
 	t( "Parent Element", "div p", ["firstp","ap","sndp","en","sap","first"] );
 	equals( jQuery("param", "#object1").length, 2, "Object/param as context" );
+
+	isSet( jQuery("p", document.getElementsByTagName("div")), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	isSet( jQuery("p", "div"), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	isSet( jQuery("p", jQuery("div")), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
+	isSet( jQuery("div").find("p"), q("firstp","ap","sndp","en","sap","first"), "Finding elements with a context." );
 	
 	ok( jQuery("#length").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
 	ok( jQuery("#lengthtest input").length, '&lt;input name="length"&gt; cannot be found under IE, see #945' );
@@ -30,10 +35,12 @@ test("element", function() {
 
 if ( location.protocol != "file:" ) {
 	test("XML Document Selectors", function() {
-		expect(5);
+		expect(7);
 		stop();
 		jQuery.get("data/with_fries.xml", function(xml) {
 			equals( jQuery("foo_bar", xml).length, 1, "Element Selector with underscore" );
+			equals( jQuery(".component", xml).length, 1, "Class selector" );
+			equals( jQuery("[class*=component]", xml).length, 1, "Attribute selector for class" );
 			equals( jQuery("property[name=prop2]", xml).length, 1, "Attribute selector with name" );
 			equals( jQuery("[name=prop2]", xml).length, 1, "Attribute selector with name" );
 			equals( jQuery("#seite1", xml).length, 1, "Attribute selector with ID" );
@@ -64,7 +71,7 @@ test("broken", function() {
 });
 
 test("id", function() {
-	expect(27);
+	expect(28);
 	t( "ID Selector", "#body", ["body"] );
 	t( "ID Selector w/ Element", "body#body", ["body"] );
 	t( "ID Selector w/ Element", "ul#first", [] );
@@ -100,15 +107,22 @@ test("id", function() {
 
 	t( "Underscore ID", "#types_all", ["types_all"] );
 	t( "Dash ID", "#fx-queue", ["fx-queue"] );
+
+	t( "ID with weird characters in it", "#name\\+value", ["name+value"] );
 });
 
 test("class", function() {
-	expect(18);
+	expect(22);
 	t( "Class Selector", ".blog", ["mark","simon"] );
 	t( "Class Selector", ".GROUPS", ["groups"] );
 	t( "Class Selector", ".blog.link", ["simon"] );
 	t( "Class Selector w/ Element", "a.blog", ["mark","simon"] );
 	t( "Parent Class Selector", "p .blog", ["mark","simon"] );
+
+	isSet( jQuery(".blog", document.getElementsByTagName("p")), q("mark", "simon"), "Finding elements with a context." );
+	isSet( jQuery(".blog", "p"), q("mark", "simon"), "Finding elements with a context." );
+	isSet( jQuery(".blog", jQuery("p")), q("mark", "simon"), "Finding elements with a context." );
+	isSet( jQuery("p").find(".blog"), q("mark", "simon"), "Finding elements with a context." );
 	
 	t( "Class selector using UTF8", ".台北Táiběi", ["utf8class1"] );
 	//t( "Class selector using UTF8", ".台北", ["utf8class1","utf8class2"] );
@@ -134,7 +148,7 @@ test("class", function() {
 });
 
 test("name", function() {
-	expect(9);
+	expect(11);
 
 	t( "Name selector", "input[name=action]", ["text1"] );
 	t( "Name selector with single quotes", "input[name='action']", ["text1"] );
@@ -148,6 +162,13 @@ test("name", function() {
 
 	isSet( jQuery("#form").find("input[name=action]"), q("text1"), "Name selector within the context of another element" );
 	isSet( jQuery("#form").find("input[name='foo[bar]']"), q("hidden2"), "Name selector for grouped form element within the context of another element" );
+
+	var a = jQuery('<a id="tName1ID" name="tName1">tName1 A</a><a id="tName2ID" name="tName2">tName2 A</a><div id="tName1">tName1 Div</div>').appendTo('#main');
+
+	t( "Find elements that have similar IDs", "[name=tName1]", ["tName1ID"] );
+	t( "Find elements that have similar IDs", "[name=tName2]", ["tName2ID"] );
+
+	a.remove();
 });
 
 
@@ -161,7 +182,7 @@ test("multiple", function() {
 });
 
 test("child and adjacent", function() {
-	expect(45);
+	expect(49);
 	t( "Child", "p > a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p> a", ["simon1","google","groups","mark","yahoo","simon"] );
 	t( "Child", "p >a", ["simon1","google","groups","mark","yahoo","simon"] );
@@ -174,6 +195,9 @@ test("child and adjacent", function() {
 	t( "Adjacent", "a+ a", ["groups"] );
 	t( "Adjacent", "a+a", ["groups"] );
 	t( "Adjacent", "p + p", ["ap","en","sap"] );
+	t( "Adjacent", "p#firstp + p", ["ap"] );
+	t( "Adjacent", "p[lang=en] + p", ["sap"] );
+	t( "Adjacent", "a.GROUPS + code + a", ["mark"] );
 	t( "Comma, Child, and Adjacent", "a + a, code > a", ["groups","anchor1","anchor2"] );
 
 	t( "Verify deep class selector", "div.blah > p > a", [] );
@@ -189,6 +213,7 @@ test("child and adjacent", function() {
 	
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Nth Child", "p:nth-child(1)", ["firstp","sndp"] );
+	t( "Not Nth Child", "p:not(:nth-child(1))", ["ap","en","sap","first"] );
 
 	// Verify that the child position isn't being cached improperly
 	jQuery("p:first-child").after("<div></div>");
@@ -286,7 +311,7 @@ test("attributes", function() {
 });
 
 test("pseudo (:) selectors", function() {
-	expect(53);
+	expect(70);
 	t( "First Child", "p:first-child", ["firstp","sndp"] );
 	t( "Last Child", "p:last-child", ["sap"] );
 	t( "Only Child", "a:only-child", ["simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2"] );
@@ -301,11 +326,27 @@ test("pseudo (:) selectors", function() {
 	t( "Text Contains", "a:contains('Google Groups (Link)')", ["groups"] );
 	t( "Text Contains", "a:contains('(Link)')", ["groups"] );
 
-	t( "Element Preceded By", "p ~ div", ["foo","fx-queue","fx-tests", "moretests","tabindex-tests", "liveHandlerOrder"] );
+	t( "Element Preceded By", "p ~ div", ["foo", "moretests","tabindex-tests", "liveHandlerOrder"] );
 	t( "Not", "a.blog:not(.link)", ["mark"] );
 	t( "Not - multiple", "#form option:not(:contains('Nothing'),#option1b,:selected)", ["option1c", "option1d", "option2b", "option2c", "option3d", "option3e"] );
 	//t( "Not - complex", "#form option:not([id^='opt']:nth-child(-n+3))", [ "option1a", "option1d", "option2d", "option3d", "option3e"] );
 	t( "Not - recursive", "#form option:not(:not(:selected))[id^='option3']", [ "option3b", "option3c"] );
+
+	t( ":not() failing interior", "p:not(.foo)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "p:not(div.foo)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "p:not(p.foo)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "p:not(#blargh)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "p:not(div#blargh)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not() failing interior", "p:not(p#blargh)", ["firstp","ap","sndp","en","sap","first"] );
+
+	t( ":not Multiple", "p:not(a)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "p:not(a, b)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "p:not(a, b, div)", ["firstp","ap","sndp","en","sap","first"] );
+	t( ":not Multiple", "p:not(p)", [] );
+	t( ":not Multiple", "p:not(a,p)", [] );
+	t( ":not Multiple", "p:not(p,a)", [] );
+	t( ":not Multiple", "p:not(a,p,b)", [] );
+	t( ":not Multiple", ":input:not(:image,:input,:submit)", [] );
 	
 	t( "nth Element", "p:nth(1)", ["ap"] );
 	t( "First Element", "p:first", ["firstp"] );
@@ -316,8 +357,11 @@ test("pseudo (:) selectors", function() {
 	t( "Position Greater Than", "p:gt(0)", ["ap","sndp","en","sap","first"] );
 	t( "Position Less Than", "p:lt(3)", ["firstp","ap","sndp"] );
 	t( "Is A Parent", "p:parent", ["firstp","ap","sndp","en","sap","first"] );
-	t( "Is Visible", "#form input:visible", ["text1","text2","radio1","radio2","check1","check2","name"] );
-	t( "Is Hidden", "#form input:hidden", ["hidden1","hidden2"] );
+	t( "Is Visible", "#form input:visible", [] );
+	t( "Is Visible", "div:visible:not(.testrunner-toolbar):lt(2)", ["nothiddendiv", "nothiddendivchild"] );
+	t( "Is Hidden", "#form input:hidden", ["text1","text2","radio1","radio2","check1","check2","hidden1","hidden2","name"] );
+	t( "Is Hidden", "#main:hidden", ["main"] );
+	t( "Is Hidden", "#dl:hidden", ["dl"] );
 
 	t( "Check position filtering", "div#nothiddendiv:eq(0)", ["nothiddendiv"] );
 	t( "Check position filtering", "div#nothiddendiv:last", ["nothiddendiv"] );
@@ -330,8 +374,8 @@ test("pseudo (:) selectors", function() {
 	t( "Check position filtering", "div.nothiddendiv:not(:lt(0))", ["nothiddendiv"] );
 
 	t( "Check element position", "div div:eq(0)", ["nothiddendivchild"] );
-	t( "Check element position", "div div:eq(5)", ["fadeout"] );
-	t( "Check element position", "div div:eq(27)", ["t2037"] );
+	t( "Check element position", "div div:eq(5)", ["t2037"] );
+	t( "Check element position", "div div:eq(27)", ["hide"] );
 	t( "Check element position", "div div:first", ["nothiddendivchild"] );
 	t( "Check element position", "div > div:first", ["nothiddendivchild"] );
 	t( "Check element position", "#dl div:first div:first", ["foo"] );
