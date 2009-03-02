@@ -499,7 +499,7 @@ jQuery.extend({
 
 			// Get the JavaScript object, if JSON is used.
 			if ( type == "json" )
-				data = jQuery.json(data);
+				data = jQuery.jsonParse(data);
 		}
 		
 		return data;
