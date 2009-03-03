@@ -59,6 +59,9 @@ MINJAR = java -jar ${BUILD_DIR}/yuicompressor-2.4.2.jar
 all: 4query lite min speed
 	@@echo "4query build complete."
 
+quick: 4query
+	@@echo "4query quick build complete."
+
 ${DIST_DIR}:
 	@@mkdir -p ${DIST_DIR}
 
