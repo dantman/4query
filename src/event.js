@@ -559,7 +559,7 @@ jQuery.fn.extend({
 		// If the DOM is already ready
 		if ( jQuery.isReady )
 			// Execute the function immediately
-			fn.call( document, jQuery );
+			fn.call( document, this.$ || jQuery );
 
 		// Otherwise, remember the function for later
 		else

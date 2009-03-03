@@ -10,9 +10,15 @@ var
 	// Map over the $ in case of overwrite
 	_$ = window.$,
 
-	jQuery = window.jQuery = window.$4 = window.$ = function( selector, context ) {
+	jQuery = window.jQuery = function( selector, context ) {
 		// The jQuery object is actually just the init constructor 'enhanced'
 		return new jQuery.fn.init( selector, context );
+	},
+
+	$4 = window.$4 = window.$ = function( args ) {
+		if(arguments.callee.caller == $4) return this;
+		var fq = new $4;
+		return $4.fn.init.apply( fq, arguments );
 	},
 
 	// A simple way to check for HTML strings or ID strings
@@ -28,6 +34,8 @@ jQuery.fn = jQuery.prototype = {
 
 		// Handle $(DOMElement)
 		if ( selector.nodeType ) {
+			if( this.v4query && arguments.length > 1 ) return $4(selector).localApply( "find", arguments, -1 );
+			
 			this[0] = selector;
 			this.length = 1;
 			this.context = selector;
@@ -52,24 +60,26 @@ jQuery.fn = jQuery.prototype = {
 					// Handle the case where IE and Opera return items
 					// by name instead of ID
 					if ( elem && elem.id != match[3] )
-						return jQuery().find( selector );
+						return this.$().find( selector );
 
 					// Otherwise, we inject the element directly into the jQuery object
-					var ret = jQuery( elem || [] );
+					var ret = this.$( elem || [] );
 					ret.context = document;
 					ret.selector = selector;
 					return ret;
 				}
 
-			// HANDLE: $(expr, [context])
-			// (which is just equivalent to: $(content).find(expr)
+			// HANDLE: jQuery(expr, [context]) and $4(context, expr, ...)
+			// (which is just equivalent to: $(context).find(expr, ...)
 			} else
-				return jQuery( context ).find( selector );
+				return this.v4query ? // 4query uses $4( sel1, sel2, ... selN );
+					$4(document).localApply( "find", arguments ) :
+					jQuery( context ).find( selector );
 
 		// HANDLE: $(function)
 		// Shortcut for document ready
 		} else if ( jQuery.isFunction( selector ) )
-			return jQuery( document ).ready( selector );
+			return this.$( document ).ready( selector );
 
 		// Make sure that old selector state is passed along
 		if ( selector.selector && selector.context ) {
@@ -82,12 +92,12 @@ jQuery.fn = jQuery.prototype = {
 			jQuery.makeArray(selector));
 	},
 
+	// Recursive reference to allow easier extension
+	$: jQuery,
+
 	// Start with an empty selector
 	selector: "",
 
-	// The current version of 4query being used
-	v4query: "@4VERSION",
-	
 	// The current version of jQuery being used
 	jquery: "@JVERSION",
 	
@@ -112,7 +122,7 @@ jQuery.fn = jQuery.prototype = {
 	// (returning the new matched element set)
 	pushStack: function( elems, name, selector ) {
 		// Build a new jQuery matched element set
-		var ret = jQuery( elems );
+		var ret = this.$( elems );
 
 		// Add the old object onto the stack (as a reference)
 		ret.prevObject = this;
@@ -155,6 +165,14 @@ jQuery.fn = jQuery.prototype = {
 			// If it receives a jQuery object, the first element is used
 			elem && elem.jquery ? elem[0] : elem
 		, this );
+	},
+	
+	// Shorthand for context.method.apply( context, arguments ); so you don't
+	// need to store context
+	// If discard is passed a negative number it will discard that many args from the start
+	localApply: function( method, args, discard ) {
+		if( discard < 0 ) Array.prototype.splice.call(args, 0, discard*-1);
+		return this[method].apply( this, args );
 	},
 
 	attr: function( name, value, type ) {
@@ -219,7 +237,7 @@ jQuery.fn = jQuery.prototype = {
 	wrapAll: function( html ) {
 		if ( this[0] ) {
 			// The elements to wrap the target around
-			var wrap = jQuery( html, this[0].ownerDocument ).clone();
+			var wrap = this.$( html, this[0].ownerDocument ).clone();
 
 			if ( this[0].parentNode )
 				wrap.insertBefore( this[0] );
@@ -239,13 +257,13 @@ jQuery.fn = jQuery.prototype = {
 
 	wrapInner: function( html ) {
 		return this.each(function(){
-			jQuery( this ).contents().wrapAll( html );
+			this.$( this ).contents().wrapAll( html );
 		});
 	},
 
 	wrap: function( html ) {
 		return this.each(function(){
-			jQuery( this ).wrapAll( html );
+			this.$( this ).wrapAll( html );
 		});
 	},
 
@@ -276,7 +294,7 @@ jQuery.fn = jQuery.prototype = {
 	},
 
 	end: function() {
-		return this.prevObject || jQuery( [] );
+		return this.prevObject || this.$( [] );
 	},
 
 	// For internal use only.
@@ -285,14 +303,17 @@ jQuery.fn = jQuery.prototype = {
 	sort: [].sort,
 	splice: [].splice,
 
-	find: function( selector ) {
+	find: function( selector /* ...selectorN */ ) {
+		if ( arguments.length > 1 ) // handle recursive .find( selector, selector, ... );
+			return this.find( selector ).localApply("find", Array.prototype.slice.call(arguments, 1));
+		
 		if ( this.length === 1 ) {
 			var ret = this.pushStack( [], "find", selector );
 			ret.length = 0;
 			jQuery.find( selector, this[0], ret );
 			return ret;
 		} else {
-			return this.pushStack( jQuery.unique(jQuery.map(this, function(elem){
+			return this.pushStack( this.$.unique(this.$.map(this, function(elem){
 				return jQuery.find( selector, elem );
 			})), "find", selector );
 		}
@@ -359,13 +380,13 @@ jQuery.fn = jQuery.prototype = {
 	},
 
 	closest: function( selector ) {
-		var pos = jQuery.expr.match.POS.test( selector ) ? jQuery(selector) : null,
+		var pos = jQuery.expr.match.POS.test( selector ) ? this.$(selector) : null,
 			closer = 0;
 
 		return this.map(function(){
 			var cur = this;
 			while ( cur && cur.ownerDocument ) {
-				if ( pos ? pos.index(cur) > -1 : jQuery(cur).is(selector) ) {
+				if ( pos ? pos.index(cur) > -1 : this.$(cur).is(selector) ) {
 					jQuery.data(cur, "closest", closer);
 					return cur;
 				}
@@ -393,7 +414,7 @@ jQuery.fn = jQuery.prototype = {
 		return this.pushStack( jQuery.unique( jQuery.merge(
 			this.get(),
 			typeof selector === "string" ?
-				jQuery( selector ) :
+				this.$( selector ) :
 				jQuery.makeArray( selector )
 		)));
 	},
@@ -431,7 +452,7 @@ jQuery.fn = jQuery.prototype = {
 
 						if ( option.selected ) {
 							// Get the specifc value for the option
-							value = jQuery(option).val();
+							value = this.$(option).val();
 
 							// We don't need an array for one selects
 							if ( one )
@@ -540,6 +561,9 @@ jQuery.fn = jQuery.prototype = {
 // Give the init function the jQuery prototype for later instantiation
 jQuery.fn.init.prototype = jQuery.fn;
 
+$4.fn = $4.prototype = new jQuery;
+
+
 function evalScript( i, elem ) {
 	if ( elem.src )
 		jQuery.ajax({
@@ -559,7 +583,7 @@ function now(){
 	return +new Date;
 }
 
-jQuery.extend = jQuery.fn.extend = function() {
+$4.extend = $4.fn.extend = jQuery.extend = jQuery.fn.extend = function() {
 	// copy reference to target object
 	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
@@ -1160,6 +1184,18 @@ jQuery.extend({
 		return ret.concat.apply( [], ret );
 	}
 });
+
+$4.fn.extend({
+
+	// Recursive reference to allow easier extension
+	$: $4,
+
+	// The current version of 4query being used
+	v4query: "@4VERSION"
+	
+});
+
+$4.fn.v4query = "@4VERSION";
 
 // Use of jQuery.browser is deprecated.
 // It's included for backwards compatibility and plugins,

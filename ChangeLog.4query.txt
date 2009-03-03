@@ -9,6 +9,7 @@
 - scrollLeft and scrollTop can accept named aliases for the left and top, and the right and bottom to make scrolling code easier
 - Rename :parent to :hasChildren
 - Depreciate ambiguous .toggle( fn, fn, fn ); and instead support .click( fn, fn, fn );
+- Support $4(node, selector, ...); instead of jQuery(selector, context); when $4 is used instead of jQuery
 
 === 0.0.1 ===
 - Initial jQuery modifications
